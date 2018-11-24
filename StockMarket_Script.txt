@@ -1,0 +1,97 @@
+Sub StockMarket()
+Dim lastrow As Long
+Dim ticket As String
+Dim yearchange As Double
+Dim percentchange As Double
+Dim Summary_Table_Row As Integer
+Dim yearopen As Double
+Dim yearclose As Double
+Dim volume As Double
+Dim j As Integer
+Dim ws_num As Integer
+Dim starting_ws As Worksheet
+
+Set starting_ws = ActiveSheet
+ws_num = ThisWorkbook.Worksheets.Count
+
+    For j = 1 To ws_num
+
+        ThisWorkbook.Worksheets(j).Activate
+    
+        Summary_Table_Row = 2
+        yearchange = 0
+        percentchange = 0
+        lastrow = 0
+        yearopen = 0
+        yearclose = 0
+        volume = 0
+        
+        lastrow = Cells(Cells.Rows.Count, "A").End(xlUp).Row
+        
+            For i = 2 To lastrow
+            
+                If Cells(i - 1, 1).Value <> Cells(i, 1).Value Then
+                    yearopen = Cells(i, 6).Value
+                    
+                End If
+            
+            
+                If Cells(i + 1, 1).Value <> Cells(i, 1).Value And yearopen > 0 Then
+        
+                    ticket = Cells(i, 1).Value
+                    yearclose = Cells(i, 6).Value
+                    yearchange = yearclose - yearopen
+                    percentchange = yearchange / yearopen
+                    volume = volume + Cells(i, 7).Value
+        
+                    ' Print the ticket in the Summary Table
+                    Range("I" & Summary_Table_Row).Value = ticket
+                    
+                    'Print yearchange
+                    Range("J" & Summary_Table_Row).Value = yearchange
+                    
+                        If yearchange >= 0 Then
+                           Range("J" & Summary_Table_Row).Interior.ColorIndex = 4
+                        Else
+                           Range("J" & Summary_Table_Row).Interior.ColorIndex = 3
+                        End If
+                        
+                    'Print percent change
+                    Range("K" & Summary_Table_Row).Value = percentchange
+                    Range("K" & Summary_Table_Row).NumberFormat = "0.00%"
+                    
+        
+                    'Print volume
+                    Range("L" & Summary_Table_Row).Value = volume
+                    
+                    
+                    ' Add one to the summary table row
+                    Summary_Table_Row = Summary_Table_Row + 1
+                    
+                     volume = 0
+                    
+                Else
+                     volume = volume + Cells(i, 7).Value
+        
+            End If
+            
+        
+            Next i
+            
+        Cells(1, 9).Value = "ticker"
+        Cells(1, 10).Value = "yearly change"
+        Cells(1, 11).Value = "percent change"
+        Cells(1, 12).Value = "total stock volume"
+        
+        
+        ThisWorkbook.Worksheets(j).Cells(1, 1) = 1
+        
+    Next
+    
+    starting_ws.Activate
+
+End Sub
+
+
+
+
